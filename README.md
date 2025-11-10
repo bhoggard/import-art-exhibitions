@@ -12,7 +12,7 @@ A TypeScript CLI tool that reads URLs from an are.na channel and uses Claude AI 
 ## Installation
 
 ```bash
-npm install
+yarn install
 ```
 
 ## Configuration
@@ -29,19 +29,19 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 Build the project:
 
 ```bash
-npm run build
+yarn build
 ```
 
 Run the CLI:
 
 ```bash
-npm start <channel-slug> --limit <number>
+yarn start <channel-slug> --limit <number>
 ```
 
 Or run in development mode:
 
 ```bash
-npm run dev <channel-slug> --limit <number>
+yarn dev <channel-slug> --limit <number>
 ```
 
 ### Arguments
@@ -52,7 +52,7 @@ npm run dev <channel-slug> --limit <number>
 ### Example
 
 ```bash
-npm start my-art-channel --limit 10
+yarn start my-art-channel --limit 10
 ```
 
 ## Output
@@ -74,7 +74,7 @@ The tool outputs JSON data to stdout with the following structure:
 Watch mode for development:
 
 ```bash
-npm run watch
+yarn watch
 ```
 
 ## Project Structure
