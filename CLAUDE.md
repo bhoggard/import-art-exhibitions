@@ -14,3 +14,7 @@ Use [arena.js](https://github.com/ivangreene/arena-js) to read the items. The pe
 
 The application should accept a command-line argument called `--limit` to limit the number of items that will be processed.
 
+## Workflow
+
+- Always run `yarn install && yarn build` to make sure all packages are installed and the application has no compile errors.
+- Be sure to typecheck when you’re done making a series of code changes
