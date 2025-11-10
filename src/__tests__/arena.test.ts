@@ -53,9 +53,11 @@ describe('arena', () => {
         }),
       } as any;
 
-      await fetchChannelItems(mockArena, 'test-channel', 5);
+      const items = await fetchChannelItems(mockArena, 'test-channel', 1);
 
-      expect(mockArena.channel().contents).toHaveBeenCalledWith({ page: 1, per: 5 });
+      expect(mockArena.channel().contents).toHaveBeenCalledWith({ page: 1, per: 1 });
+      expect(items).toHaveLength(1);
+      expect(items[0].id).toBe(1);
     });
 
     it('should filter out items without URLs', async () => {
