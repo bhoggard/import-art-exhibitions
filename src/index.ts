@@ -24,9 +24,11 @@ async function main() {
     .description('Import art exhibition data from are.na using Claude AI')
     .version('1.0.0')
     .option('-l, --limit <number>', 'Limit the number of items to process', parseInt)
-    .argument('<channel>', 'Are.na channel slug or ID')
-    .action(async (channel: string, options: CLIOptions) => {
+    .action(async (options: CLIOptions) => {
       try {
+        // Hardcoded channel slug
+        const channel = 'art-exhibitions-for-filterizer';
+
         // Initialize clients
         const arenaClient = initArenaClient();
         const anthropicClient = initAnthropicClient();

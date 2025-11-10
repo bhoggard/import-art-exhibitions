@@ -35,24 +35,25 @@ yarn build
 Run the CLI:
 
 ```bash
-yarn start <channel-slug> --limit <number>
+yarn start --limit <number>
 ```
 
 Or run in development mode:
 
 ```bash
-yarn dev <channel-slug> --limit <number>
+yarn dev --limit <number>
 ```
 
-### Arguments
+The tool processes the `art-exhibitions-for-filterizer` are.na channel.
 
-- `<channel>` - Required. The are.na channel slug or ID
+### Options
+
 - `--limit <number>` - Optional. Limit the number of items to process
 
 ### Example
 
 ```bash
-yarn start my-art-channel --limit 10
+yarn start --limit 10
 ```
 
 ## Output
