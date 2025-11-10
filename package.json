@@ -23,11 +23,12 @@
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
-    "arena-js": "^1.0.0",
+    "are.na": "^0.1.5",
     "commander": "^12.1.0",
     "dotenv": "^16.4.5"
   },
   "devDependencies": {
+    "@types/are.na": "^0.1.4",
     "@types/node": "^22.10.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"

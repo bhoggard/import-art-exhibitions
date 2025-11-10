@@ -2,7 +2,7 @@
  * Functions for interacting with are.na API
  */
 
-import Arena from 'arena-js';
+import Arena from 'are.na';
 
 /**
  * Initialize Arena client with access token from environment
