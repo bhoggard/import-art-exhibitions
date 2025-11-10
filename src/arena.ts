@@ -19,15 +19,23 @@ export function initArenaClient(): Arena {
 
 /**
  * Fetch items from an are.na channel
+ * @param arena - Arena client instance
  * @param channelSlug - The slug or ID of the channel
  * @param limit - Maximum number of items to fetch
+ * @returns Array of channel items with URLs
  */
 export async function fetchChannelItems(
   arena: Arena,
   channelSlug: string,
   limit?: number
 ): Promise<any[]> {
-  // TODO: Implement fetching items from are.na channel
-  // This will be implemented in the next step
-  throw new Error('Not implemented yet');
+  const params = {
+    page: 1,
+    per: limit || 100, // Default to 100 items if no limit specified
+  };
+
+  const contents = await arena.channel(channelSlug).contents(params);
+
+  // Filter to only items that have a source URL (links)
+  return contents.filter((item: any) => item.source?.url || item.image?.original?.url);
 }

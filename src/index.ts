@@ -7,8 +7,8 @@
 import { Command } from 'commander';
 import * as dotenv from 'dotenv';
 import { CLIOptions } from './types';
-import { initArenaClient } from './arena';
-import { initAnthropicClient } from './extractor';
+import { initArenaClient, fetchChannelItems } from './arena';
+import { initAnthropicClient, extractExhibitionData } from './extractor';
 
 // Load environment variables
 dotenv.config();
@@ -38,12 +38,34 @@ async function main() {
           console.error(`Limit: ${options.limit} items`);
         }
 
-        // TODO: Implement the main processing logic
         // 1. Fetch items from are.na channel
-        // 2. For each item, extract exhibition data using Claude
-        // 3. Output JSON to stdout
+        console.error('Fetching items from are.na...');
+        const items = await fetchChannelItems(arenaClient, channel, options.limit);
+        console.error(`Found ${items.length} items`);
 
-        console.error('Implementation coming soon...');
+        // 2. For each item, extract exhibition data using Claude
+        const results = [];
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          const url = item.source?.url || item.image?.original?.url;
+
+          if (!url) {
+            console.error(`Skipping item ${i + 1}: no URL found`);
+            continue;
+          }
+
+          console.error(`Processing ${i + 1}/${items.length}: ${url}`);
+
+          try {
+            const exhibition = await extractExhibitionData(anthropicClient, url);
+            results.push(exhibition);
+          } catch (error) {
+            console.error(`Error processing ${url}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
+        }
+
+        // 3. Output JSON to stdout
+        console.log(JSON.stringify(results, null, 2));
       } catch (error) {
         console.error('Error:', error instanceof Error ? error.message : 'Unknown error');
         process.exit(1);
