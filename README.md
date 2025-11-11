@@ -6,6 +6,8 @@ A TypeScript CLI tool that reads URLs from an are.na channel and uses Claude AI 
 
 - Fetches items from are.na channels
 - Extracts structured exhibition data using Claude Haiku
+- Searches for venues in Sanity CMS
+- Creates draft events in Sanity
 - Outputs JSON to stdout
 - Configurable item limit
 
@@ -22,6 +24,7 @@ Create a `.env` file in the project root with the following variables:
 ```env
 ARENA_FILTERIZER_KEY=your_arena_access_token
 ANTHROPIC_API_KEY=your_anthropic_api_key
+SANITY_API_KEY=your_sanity_api_key
 ```
 
 ## Usage
@@ -86,4 +89,5 @@ src/
   types.ts      - TypeScript type definitions
   arena.ts      - Are.na API integration
   extractor.ts  - Claude AI extraction logic
+  sanity.ts     - Sanity CMS integration
 ```
