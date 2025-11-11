@@ -9,6 +9,7 @@ import * as dotenv from 'dotenv';
 import { CLIOptions } from './types';
 import { initArenaClient, fetchChannelItems } from './arena';
 import { initAnthropicClient, extractExhibitionData } from './extractor';
+import { initSanityClient, findVenueByName } from './sanity';
 
 // Load environment variables
 dotenv.config();
@@ -32,6 +33,7 @@ async function main() {
         // Initialize clients
         const arenaClient = initArenaClient();
         const anthropicClient = initAnthropicClient();
+        const sanityClient = initSanityClient();
 
         console.error(`Processing channel: ${channel}`);
         if (options.limit) {
@@ -58,6 +60,17 @@ async function main() {
 
           try {
             const exhibition = await extractExhibitionData(anthropicClient, url);
+
+            // Search for venue in Sanity
+            if (exhibition.venue_name) {
+              const venue = await findVenueByName(sanityClient, exhibition.venue_name);
+              if (venue) {
+                console.error(`  ✓ Venue "${exhibition.venue_name}" found in Sanity (ID: ${venue._id})`);
+              } else {
+                console.error(`  ✗ Venue "${exhibition.venue_name}" not found in Sanity`);
+              }
+            }
+
             results.push(exhibition);
           } catch (error) {
             console.error(`Error processing ${url}: ${error instanceof Error ? error.message : 'Unknown error'}`);

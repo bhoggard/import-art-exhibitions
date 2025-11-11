@@ -25,6 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
+    "@sanity/client": "^6.24.1",
     "are.na": "^0.1.5",
     "commander": "^12.1.0",
     "dotenv": "^16.4.5"
