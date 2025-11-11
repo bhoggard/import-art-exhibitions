@@ -45,12 +45,16 @@ export interface SanityEvent {
 export function initSanityClient(): SanityClient {
   const token = process.env.SANITY_API_KEY;
 
+  if (!token) {
+    console.error('Warning: SANITY_API_KEY environment variable is not set. Write operations will fail.');
+  }
+
   return createClient({
     projectId: SANITY_PROJECT_ID,
     dataset: SANITY_DATASET,
     useCdn: false, // Don't use CDN for writes
     apiVersion: '2024-01-01',
-    token, // Optional: only needed for writes
+    token, // Required for write operations
   });
 }
 
@@ -116,8 +120,14 @@ export async function createDraftEvent(
   try {
     const result = await client.create(eventDoc);
     return result as SanityEvent;
-  } catch (error) {
-    console.error(`Error creating draft event:`, error);
+  } catch (error: any) {
+    // Provide detailed error information
+    if (error.statusCode === 401) {
+      console.error(`Authentication error: SANITY_API_KEY is invalid or missing write permissions`);
+      console.error(`Make sure your token has 'Editor' or 'Admin' permissions for project ${SANITY_PROJECT_ID}`);
+    } else {
+      console.error(`Error creating draft event:`, error.message || error);
+    }
     throw error;
   }
 }
