@@ -9,7 +9,7 @@ import * as dotenv from 'dotenv';
 import { CLIOptions } from './types';
 import { initArenaClient, fetchChannelItems } from './arena';
 import { initAnthropicClient, extractExhibitionData } from './extractor';
-import { initSanityClient, findVenueByName } from './sanity';
+import { initSanityClient, findVenueByName, createDraftEvent } from './sanity';
 
 // Load environment variables
 dotenv.config();
@@ -62,13 +62,22 @@ async function main() {
             const exhibition = await extractExhibitionData(anthropicClient, url);
 
             // Search for venue in Sanity
+            let venue = null;
             if (exhibition.venue_name) {
-              const venue = await findVenueByName(sanityClient, exhibition.venue_name);
+              venue = await findVenueByName(sanityClient, exhibition.venue_name);
               if (venue) {
                 console.error(`  ✓ Venue "${exhibition.venue_name}" found in Sanity (ID: ${venue._id})`);
               } else {
                 console.error(`  ✗ Venue "${exhibition.venue_name}" not found in Sanity`);
               }
+            }
+
+            // Create draft event in Sanity
+            try {
+              const event = await createDraftEvent(sanityClient, exhibition, venue);
+              console.error(`  ✓ Draft event created in Sanity (ID: ${event._id})`);
+            } catch (eventError) {
+              console.error(`  ✗ Failed to create draft event: ${eventError instanceof Error ? eventError.message : 'Unknown error'}`);
             }
 
             results.push(exhibition);
