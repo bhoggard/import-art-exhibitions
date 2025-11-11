@@ -24,7 +24,7 @@ Create a `.env` file in the project root with the following variables:
 ```env
 ARENA_FILTERIZER_KEY=your_arena_access_token
 ANTHROPIC_API_KEY=your_anthropic_api_key
-SANITY_API_TOKEN=your_sanity_api_token
+SANITY_API_KEY=your_sanity_api_key
 ```
 
 ## Usage

@@ -43,7 +43,7 @@ export interface SanityEvent {
  * Initialize Sanity client
  */
 export function initSanityClient(): SanityClient {
-  const token = process.env.SANITY_API_TOKEN;
+  const token = process.env.SANITY_API_KEY;
 
   return createClient({
     projectId: SANITY_PROJECT_ID,
