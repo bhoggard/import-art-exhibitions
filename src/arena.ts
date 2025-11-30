@@ -57,8 +57,8 @@ export async function archiveBlock(
 ): Promise<void> {
   try {
     // Add the block to the archive channel using its source URL
-    // Note: arena.js expects 'content' property and will convert URLs to 'source' automatically
-    await arena.channel(targetChannel).createBlock({ content: sourceUrl });
+    // Pass the URL directly to createBlock (not as an object property)
+    await arena.channel(targetChannel).createBlock(sourceUrl);
     console.error(`  ✓ Added block to ${targetChannel}`);
 
     // Remove the block from the source channel
