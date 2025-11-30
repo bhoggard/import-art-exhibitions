@@ -118,7 +118,7 @@ describe('arena', () => {
       );
 
       expect(mockArena.channel).toHaveBeenCalledWith('archive-channel');
-      expect(mockCreateBlock).toHaveBeenCalledWith({ source: 'https://example.com/artwork' });
+      expect(mockCreateBlock).toHaveBeenCalledWith({ content: 'https://example.com/artwork' });
       expect(mockArena.channel).toHaveBeenCalledWith('source-channel');
       expect(mockDeleteBlock).toHaveBeenCalledWith('456');
       expect(console.error).toHaveBeenCalledWith('  ✓ Added block to archive-channel');
