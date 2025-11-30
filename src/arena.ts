@@ -39,3 +39,31 @@ export async function fetchChannelItems(
   // Filter to only items that have a source URL (links)
   return contents.filter((item: any) => item.source?.url || item.image?.original?.url);
 }
+
+/**
+ * Move a block from one channel to another (archive it)
+ * @param arena - Arena client instance
+ * @param blockId - The ID of the block to move
+ * @param sourceUrl - The source URL of the block
+ * @param sourceChannel - The channel to remove the block from
+ * @param targetChannel - The channel to add the block to
+ */
+export async function archiveBlock(
+  arena: Arena,
+  blockId: number,
+  sourceUrl: string,
+  sourceChannel: string,
+  targetChannel: string
+): Promise<void> {
+  try {
+    // Add the block to the archive channel using its source URL
+    await arena.channel(targetChannel).createBlock({ source: sourceUrl });
+    console.error(`  ✓ Added block to ${targetChannel}`);
+
+    // Remove the block from the source channel
+    await arena.channel(sourceChannel).deleteBlock(blockId.toString());
+    console.error(`  ✓ Removed block from ${sourceChannel}`);
+  } catch (error) {
+    throw new Error(`Failed to archive block: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}

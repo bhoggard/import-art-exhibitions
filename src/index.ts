@@ -7,7 +7,7 @@
 import { Command } from 'commander';
 import * as dotenv from 'dotenv';
 import { CLIOptions } from './types';
-import { initArenaClient, fetchChannelItems } from './arena';
+import { initArenaClient, fetchChannelItems, archiveBlock } from './arena';
 import { initAnthropicClient, extractExhibitionData } from './extractor';
 import { initSanityClient, findVenueByName, createDraftEvent } from './sanity';
 
@@ -27,8 +27,9 @@ async function main() {
     .option('-l, --limit <number>', 'Limit the number of items to process', parseInt)
     .action(async (options: CLIOptions) => {
       try {
-        // Hardcoded channel slug
+        // Hardcoded channel slugs
         const channel = 'art-exhibitions-for-filterizer';
+        const archiveChannel = 'archive-art-exhibitions-for-filterizer';
 
         // Initialize clients
         const arenaClient = initArenaClient();
@@ -36,6 +37,7 @@ async function main() {
         const sanityClient = initSanityClient();
 
         console.error(`Processing channel: ${channel}`);
+        console.error(`Archive channel: ${archiveChannel}`);
         if (options.limit) {
           console.error(`Limit: ${options.limit} items`);
         }
@@ -78,6 +80,13 @@ async function main() {
               console.error(`  ✓ Draft event created in Sanity (ID: ${event._id})`);
             } catch (eventError) {
               console.error(`  ✗ Failed to create draft event: ${eventError instanceof Error ? eventError.message : 'Unknown error'}`);
+            }
+
+            // Archive the processed block
+            try {
+              await archiveBlock(arenaClient, item.id, url, channel, archiveChannel);
+            } catch (archiveError) {
+              console.error(`  ✗ Failed to archive block: ${archiveError instanceof Error ? archiveError.message : 'Unknown error'}`);
             }
 
             results.push(exhibition);
