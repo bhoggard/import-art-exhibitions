@@ -2,7 +2,7 @@
  * Tests for arena.ts
  */
 
-import { initArenaClient, fetchChannelItems } from '../arena';
+import { initArenaClient, fetchChannelItems, archiveBlock } from '../arena';
 
 describe('arena', () => {
   describe('initArenaClient', () => {
@@ -77,6 +77,132 @@ describe('arena', () => {
       expect(items).toHaveLength(2);
       expect(items[0].id).toBe(1);
       expect(items[1].id).toBe(3);
+    });
+  });
+
+  describe('archiveBlock', () => {
+    // Mock console.error to prevent test output pollution
+    const originalConsoleError = console.error;
+    beforeAll(() => {
+      console.error = jest.fn();
+    });
+    afterAll(() => {
+      console.error = originalConsoleError;
+    });
+
+    it('should successfully archive a block by adding to archive channel and removing from source', async () => {
+      const mockCreateBlock = jest.fn().mockResolvedValue({ id: 123 });
+      const mockDeleteBlock = jest.fn().mockResolvedValue(undefined);
+
+      const mockArena = {
+        channel: jest.fn((channelSlug: string) => {
+          if (channelSlug === 'archive-channel') {
+            return {
+              createBlock: mockCreateBlock,
+            };
+          } else if (channelSlug === 'source-channel') {
+            return {
+              deleteBlock: mockDeleteBlock,
+            };
+          }
+          return {};
+        }),
+      } as any;
+
+      await archiveBlock(
+        mockArena,
+        456,
+        'https://example.com/artwork',
+        'source-channel',
+        'archive-channel'
+      );
+
+      expect(mockArena.channel).toHaveBeenCalledWith('archive-channel');
+      expect(mockCreateBlock).toHaveBeenCalledWith({ source: 'https://example.com/artwork' });
+      expect(mockArena.channel).toHaveBeenCalledWith('source-channel');
+      expect(mockDeleteBlock).toHaveBeenCalledWith('456');
+      expect(console.error).toHaveBeenCalledWith('  ✓ Added block to archive-channel');
+      expect(console.error).toHaveBeenCalledWith('  ✓ Removed block from source-channel');
+    });
+
+    it('should throw error if adding to archive channel fails', async () => {
+      const mockCreateBlock = jest.fn().mockRejectedValue(new Error('Failed to create block'));
+
+      const mockArena = {
+        channel: jest.fn().mockReturnValue({
+          createBlock: mockCreateBlock,
+        }),
+      } as any;
+
+      await expect(
+        archiveBlock(
+          mockArena,
+          456,
+          'https://example.com/artwork',
+          'source-channel',
+          'archive-channel'
+        )
+      ).rejects.toThrow('Failed to archive block: Failed to create block');
+    });
+
+    it('should throw error if removing from source channel fails', async () => {
+      const mockCreateBlock = jest.fn().mockResolvedValue({ id: 123 });
+      const mockDeleteBlock = jest.fn().mockRejectedValue(new Error('Failed to delete block'));
+
+      const mockArena = {
+        channel: jest.fn((channelSlug: string) => {
+          if (channelSlug === 'archive-channel') {
+            return {
+              createBlock: mockCreateBlock,
+            };
+          } else if (channelSlug === 'source-channel') {
+            return {
+              deleteBlock: mockDeleteBlock,
+            };
+          }
+          return {};
+        }),
+      } as any;
+
+      await expect(
+        archiveBlock(
+          mockArena,
+          456,
+          'https://example.com/artwork',
+          'source-channel',
+          'archive-channel'
+        )
+      ).rejects.toThrow('Failed to archive block: Failed to delete block');
+    });
+
+    it('should convert blockId to string when calling deleteBlock', async () => {
+      const mockCreateBlock = jest.fn().mockResolvedValue({ id: 123 });
+      const mockDeleteBlock = jest.fn().mockResolvedValue(undefined);
+
+      const mockArena = {
+        channel: jest.fn((channelSlug: string) => {
+          if (channelSlug === 'archive-channel') {
+            return {
+              createBlock: mockCreateBlock,
+            };
+          } else if (channelSlug === 'source-channel') {
+            return {
+              deleteBlock: mockDeleteBlock,
+            };
+          }
+          return {};
+        }),
+      } as any;
+
+      await archiveBlock(
+        mockArena,
+        789,
+        'https://example.com/artwork',
+        'source-channel',
+        'archive-channel'
+      );
+
+      expect(mockDeleteBlock).toHaveBeenCalledWith('789');
     });
   });
 });
